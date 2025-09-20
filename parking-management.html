@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý bãi đỗ xe - ParkWise</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .modal { display: none; }
+        .modal.active { display: flex; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <header class="bg-white shadow-sm">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-parking text-2xl text-blue-600"></i>
+                <span class="text-xl font-bold text-gray-800">ParkWise Admin</span>
+            </div>
+            <div>
+                <a href="admin-dashboard.html" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                <a href="parking-management.html" class="text-white bg-blue-600 px-3 py-2 rounded-md text-sm font-medium">Quản lý bãi xe</a>
+                <a href="admin-bookings.html" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Quản lý Đặt chỗ</a>
+            </div>
+        </nav>
+    </header>
+    
+    <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-900">Quản lý bãi đỗ xe</h1>
+            <button id="addParkingBtn" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+                <i class="fas fa-plus mr-2"></i> Thêm bãi xe mới
+            </button>
+        </div>
+
+        <div class="bg-white shadow-lg rounded-xl overflow-hidden">
+            <table class="min-w-full bg-white">
+                <thead class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                    <tr>
+                        <th class="py-3 px-6 text-left">Tên bãi xe</th>
+                        <th class="py-3 px-6 text-left">Địa chỉ</th>
+                        <th class="py-3 px-6 text-center">Tổng chỗ</th>
+                        <th class="py-3 px-6 text-center">Giá/giờ</th>
+                        <th class="py-3 px-6 text-center">Trạng thái</th>
+                        <th class="py-3 px-6 text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="parkingTableBody" class="text-gray-600 text-sm font-light">
+                    </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div id="parkingModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-lg">
+            <form id="parkingForm">
+                <h2 id="modalTitle" class="text-2xl font-bold mb-6">Thêm bãi xe mới</h2>
+                <input type="hidden" id="parkingId">
+                <div class="grid grid-cols-1 gap-6">
+                    <input id="parkingName" type="text" placeholder="Tên bãi xe" class="w-full px-4 py-2 border rounded-lg" required>
+                    <input id="parkingAddress" type="text" placeholder="Địa chỉ" class="w-full px-4 py-2 border rounded-lg" required>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input id="totalSpots" type="number" placeholder="Tổng số chỗ" class="w-full px-4 py-2 border rounded-lg" required>
+                        <input id="basePrice" type="number" placeholder="Giá/giờ (VNĐ)" class="w-full px-4 py-2 border rounded-lg" required>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                         <input id="coordLng" type="number" step="any" placeholder="Kinh độ (Longitude)" class="w-full px-4 py-2 border rounded-lg" required>
+                         <input id="coordLat" type="number" step="any" placeholder="Vĩ độ (Latitude)" class="w-full px-4 py-2 border rounded-lg" required>
+                    </div>
+                    <select id="parkingStatus" class="w-full px-4 py-2 border rounded-lg">
+                        <option value="active">Hoạt động</option>
+                        <option value="maintenance">Bảo trì</option>
+                        <option value="closed">Đóng cửa</option>
+                    </select>
+                </div>
+                <div class="mt-8 flex justify-end space-x-4">
+                    <button id="closeModalBtn" type="button" class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-400">Hủy</button>
+                    <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="parking-management.js"></script>
+</body>
+</html>

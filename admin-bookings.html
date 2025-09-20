@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý đặt chỗ - ParkWise Admin</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Header Styles */
+        .admin-header {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-brand {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .brand-text {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        /* Navigation Styles */
+        .admin-nav {
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 0;
+            align-items: center;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 20px;
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            color: #3b82f6;
+            background: rgba(59, 130, 246, 0.05);
+            transform: translateY(-1px);
+        }
+
+        .nav-item.active {
+            color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+            border-bottom-color: #3b82f6;
+        }
+
+        .nav-item i {
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item:hover i {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <main class="admin-main-full">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-brand">
+                <i class="fas fa-parking logo-icon"></i>
+                <span class="brand-text">ParkWise Admin</span>
+            </div>
+        </header>
+        
+        <!-- Navigation -->
+        <nav class="admin-nav">
+            <div class="nav-container">
+                <div class="nav-menu">
+                    <a href="admin-dashboard.html" class="nav-item">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="parking-management.html" class="nav-item">
+                        <i class="fas fa-car"></i>
+                        <span>Quản lý bãi xe</span>
+                    </a>
+                    <a href="admin-bookings.html" class="nav-item active">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Đặt chỗ</span>
+                    </a>
+                    <a href="index.html" class="nav-item">
+                        <i class="fas fa-home"></i>
+                        <span>Trang chủ</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Page Title -->
+        <div class="page-header">
+            <h1 class="page-title">Quản lý đặt chỗ</h1>
+        </div>
+
+        <!-- Stats Cards -->
+        <section class="stats-grid">
+            <div class="stat-card primary">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Tổng đặt chỗ hôm nay</h3>
+                    <div class="stat-number">2,847</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        +12.3% so với hôm qua
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card success">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Đã xác nhận</h3>
+                    <div class="stat-number">2,134</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        +8.5%
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card warning">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Chờ xử lý</h3>
+                    <div class="stat-number">456</div>
+                    <div class="stat-change neutral">
+                        <i class="fas fa-minus"></i>
+                        Không đổi
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card danger">
+                <div class="stat-icon">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Đã hủy</h3>
+                    <div class="stat-number">257</div>
+                    <div class="stat-change negative">
+                        <i class="fas fa-arrow-down"></i>
+                        -2.1%
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search and Filter Section -->
+        <section class="booking-search-section">
+            <div class="search-header">
+                <h3>Tìm kiếm đặt chỗ</h3>
+                <div class="search-actions">
+                    <button class="add-btn" onclick="openAddBookingModal()">
+                        <i class="fas fa-plus"></i>
+                        Tạo đặt chỗ mới
+                    </button>
+                    <button class="export-btn">
+                        <i class="fas fa-download"></i>
+                        Xuất dữ liệu
+                    </button>
+                </div>
+            </div>
+            <div class="search-filters">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>Mã đặt chỗ</label>
+                        <input type="text" placeholder="Nhập mã đặt chỗ" id="searchBookingId">
+                    </div>
+                    <div class="filter-group">
+                        <label>Tên khách hàng</label>
+                        <input type="text" placeholder="Nhập tên khách hàng" id="searchCustomer">
+                    </div>
+                    <div class="filter-group">
+                        <label>Bãi xe</label>
+                        <select id="searchLocation">
+                            <option value="">Tất cả bãi xe</option>
+                            <option value="times-city">Times City</option>
+                            <option value="vincom">Vincom Bà Triệu</option>
+                            <option value="royal-city">Royal City</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Trạng thái</label>
+                        <select id="searchStatus">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="confirmed">Đã xác nhận</option>
+                            <option value="pending">Chờ xử lý</option>
+                            <option value="active">Đang sử dụng</option>
+                            <option value="completed">Hoàn thành</option>
+                            <option value="cancelled">Đã hủy</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Ngày đặt</label>
+                        <input type="date" id="searchDate">
+                    </div>
+                    <button class="search-btn" onclick="searchBookings()">
+                        <i class="fas fa-search"></i>
+                        Tìm kiếm
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bookings Table -->
+        <section class="bookings-table-section">
+            <div class="table-container">
+                <div class="section-header">
+                    <h3>Danh sách đặt chỗ</h3>
+                    <div class="table-actions">
+                        <button class="filter-btn">
+                            <i class="fas fa-filter"></i>
+                            Bộ lọc
+                        </button>
+                        <button class="refresh-btn" onclick="refreshBookings()">
+                            <i class="fas fa-sync-alt"></i>
+                            Làm mới
+                        </button>
+                    </div>
+                </div>
+                <div class="data-table" id="bookingsTable">
+                    <div class="table-header">
+                        <div class="col">Mã đặt chỗ</div>
+                        <div class="col">Khách hàng</div>
+                        <div class="col">Bãi xe</div>
+                        <div class="col">Thời gian</div>
+                        <div class="col">Biển số xe</div>
+                        <div class="col">Tổng tiền</div>
+                        <div class="col">Trạng thái</div>
+                        <div class="col">Thao tác</div>
+                    </div>
+                    <!-- Booking rows will be rendered here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Add/Edit Booking Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Tạo đặt chỗ mới</h3>
+                <span class="close" onclick="closeBookingModal()">&times;</span>
+            </div>
+            <form id="bookingForm">
+                <div class="form-group">
+                    <label>Tên khách hàng *</label>
+                    <input type="text" id="customerName" required>
+                </div>
+                <div class="form-group">
+                    <label>Số điện thoại *</label>
+                    <input type="tel" id="customerPhone" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="customerEmail">
+                </div>
+                <div class="form-group">
+                    <label>Biển số xe *</label>
+                    <input type="text" id="vehicleNumber" required>
+                </div>
+                <div class="form-group">
+                    <label>Bãi xe *</label>
+                    <select id="parkingLocation" required>
+                        <option value="">Chọn bãi xe</option>
+                        <option value="times-city">Times City</option>
+                        <option value="vincom">Vincom Bà Triệu</option>
+                        <option value="royal-city">Royal City</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Ngày đặt *</label>
+                        <input type="date" id="bookingDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Giờ bắt đầu *</label>
+                        <input type="time" id="startTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Giờ kết thúc *</label>
+                        <input type="time" id="endTime" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Ghi chú</label>
+                    <textarea id="bookingNotes" rows="3" placeholder="Ghi chú thêm (nếu có)"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" onclick="closeBookingModal()">Hủy</button>
+                    <button type="submit" class="save-btn">Lưu đặt chỗ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Sample booking data
+        let bookings = [
+            {
+                id: 'PW001',
+                customer: 'Nguyễn Văn A',
+                phone: '0901234567',
+                location: 'Times City',
+                date: '2024-01-15',
+                startTime: '08:00',
+                endTime: '18:00',
+                vehicle: '29A-12345',
+                amount: 250000,
+                status: 'confirmed'
+            },
+            {
+                id: 'PW002', 
+                customer: 'Trần Thị B',
+                phone: '0907654321',
+                location: 'Vincom Bà Triệu',
+                date: '2024-01-15',
+                startTime: '09:30',
+                endTime: '13:30',
+                vehicle: '30B-67890',
+                amount: 140000,
+                status: 'pending'
+            },
+            {
+                id: 'PW003',
+                customer: 'Lê Minh C',
+                phone: '0912345678',
+                location: 'Royal City',
+                date: '2024-01-15',
+                startTime: '14:00',
+                endTime: '17:00',
+                vehicle: '29X-11111',
+                amount: 120000,
+                status: 'active'
+            },
+            {
+                id: 'PW004',
+                customer: 'Phạm Thị D',
+                phone: '0909876543',
+                location: 'Times City',
+                date: '2024-01-14',
+                startTime: '10:00',
+                endTime: '16:00',
+                vehicle: '30A-22222',
+                amount: 150000,
+                status: 'completed'
+            },
+            {
+                id: 'PW005',
+                customer: 'Hoàng Văn E',
+                phone: '0934567890',
+                location: 'Vincom Bà Triệu',
+                date: '2024-01-14',
+                startTime: '08:30',
+                endTime: '11:30',
+                vehicle: '29B-33333',
+                amount: 105000,
+                status: 'cancelled'
+            }
+        ];
+
+        // Render bookings table
+        function renderBookings(bookingsToRender = bookings) {
+            const tableBody = document.getElementById('bookingsTable');
+            const header = tableBody.querySelector('.table-header');
+            
+            // Clear existing rows except header
+            tableBody.innerHTML = '';
+            tableBody.appendChild(header);
+
+            bookingsToRender.forEach(booking => {
+                const row = document.createElement('div');
+                row.className = 'table-row';
+                row.innerHTML = `
+                    <div class="col">
+                        <strong>${booking.id}</strong>
+                    </div>
+                    <div class="col">
+                        <div class="customer-info">
+                            <strong>${booking.customer}</strong>
+                            <div class="customer-phone">${booking.phone}</div>
+                        </div>
+                    </div>
+                    <div class="col">${booking.location}</div>
+                    <div class="col">
+                        <div class="time-info">
+                            <div>${booking.date}</div>
+                            <div class="time-range">${booking.startTime} - ${booking.endTime}</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <span class="vehicle-number">${booking.vehicle}</span>
+                    </div>
+                    <div class="col">
+                        <strong class="amount">${booking.amount.toLocaleString()}đ</strong>
+                    </div>
+                    <div class="col">
+                        <span class="status ${booking.status}">${getStatusText(booking.status)}</span>
+                    </div>
+                    <div class="col">
+                        <div class="action-buttons">
+                            <button class="action-btn view" onclick="viewBooking('${booking.id}')" title="Xem chi tiết">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn edit" onclick="editBooking('${booking.id}')" title="Chỉnh sửa">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            ${booking.status === 'pending' ? 
+                                `<button class="action-btn confirm" onclick="confirmBooking('${booking.id}')" title="Xác nhận">
+                                    <i class="fas fa-check"></i>
+                                </button>` : ''
+                            }
+                            ${booking.status !== 'completed' && booking.status !== 'cancelled' ?
+                                `<button class="action-btn cancel" onclick="cancelBooking('${booking.id}')" title="Hủy">
+                                    <i class="fas fa-times"></i>
+                                </button>` : ''
+                            }
+                        </div>
+                    </div>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'confirmed': 'Đã xác nhận',
+                'pending': 'Chờ xử lý',
+                'active': 'Đang sử dụng',
+                'completed': 'Hoàn thành',
+                'cancelled': 'Đã hủy'
+            };
+            return statusMap[status] || status;
+        }
+
+        // Modal functions
+        function openAddBookingModal() {
+            document.getElementById('modalTitle').textContent = 'Tạo đặt chỗ mới';
+            document.getElementById('bookingForm').reset();
+            document.getElementById('bookingModal').style.display = 'block';
+        }
+
+        function closeBookingModal() {
+            document.getElementById('bookingModal').style.display = 'none';
+        }
+
+        function editBooking(id) {
+            const booking = bookings.find(b => b.id === id);
+            if (booking) {
+                document.getElementById('modalTitle').textContent = 'Chỉnh sửa đặt chỗ';
+                document.getElementById('customerName').value = booking.customer;
+                document.getElementById('customerPhone').value = booking.phone;
+                document.getElementById('vehicleNumber').value = booking.vehicle;
+                document.getElementById('parkingLocation').value = booking.location.toLowerCase().replace(' ', '-');
+                document.getElementById('bookingDate').value = booking.date;
+                document.getElementById('startTime').value = booking.startTime;
+                document.getElementById('endTime').value = booking.endTime;
+                document.getElementById('bookingModal').style.display = 'block';
+            }
+        }
+
+        function viewBooking(id) {
+            const booking = bookings.find(b => b.id === id);
+            if (booking) {
+                alert(`Chi tiết đặt chỗ ${id}:\n\nKhách hàng: ${booking.customer}\nSĐT: ${booking.phone}\nBãi xe: ${booking.location}\nThời gian: ${booking.date} ${booking.startTime}-${booking.endTime}\nBiển số: ${booking.vehicle}\nSố tiền: ${booking.amount.toLocaleString()}đ\nTrạng thái: ${getStatusText(booking.status)}`);
+            }
+        }
+
+        function confirmBooking(id) {
+            if (confirm('Xác nhận đặt chỗ này?')) {
+                const booking = bookings.find(b => b.id === id);
+                if (booking) {
+                    booking.status = 'confirmed';
+                    renderBookings();
+                    alert('Đã xác nhận đặt chỗ thành công!');
+                }
+            }
+        }
+
+        function cancelBooking(id) {
+            if (confirm('Bạn có chắc muốn hủy đặt chỗ này?')) {
+                const booking = bookings.find(b => b.id === id);
+                if (booking) {
+                    booking.status = 'cancelled';
+                    renderBookings();
+                    alert('Đã hủy đặt chỗ thành công!');
+                }
+            }
+        }
+
+        function searchBookings() {
+            const bookingId = document.getElementById('searchBookingId').value.toLowerCase();
+            const customer = document.getElementById('searchCustomer').value.toLowerCase();
+            const location = document.getElementById('searchLocation').value;
+            const status = document.getElementById('searchStatus').value;
+            const date = document.getElementById('searchDate').value;
+
+            const filtered = bookings.filter(booking => {
+                return (!bookingId || booking.id.toLowerCase().includes(bookingId)) &&
+                       (!customer || booking.customer.toLowerCase().includes(customer)) &&
+                       (!location || booking.location.toLowerCase().replace(' ', '-') === location) &&
+                       (!status || booking.status === status) &&
+                       (!date || booking.date === date);
+            });
+
+            renderBookings(filtered);
+        }
+
+        function refreshBookings() {
+            renderBookings();
+            // Clear search filters
+            document.getElementById('searchBookingId').value = '';
+            document.getElementById('searchCustomer').value = '';
+            document.getElementById('searchLocation').value = '';
+            document.getElementById('searchStatus').value = '';
+            document.getElementById('searchDate').value = '';
+        }
+
+        // Form submission
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                id: 'PW' + String(bookings.length + 1).padStart(3, '0'),
+                customer: document.getElementById('customerName').value,
+                phone: document.getElementById('customerPhone').value,
+                location: document.getElementById('parkingLocation').options[document.getElementById('parkingLocation').selectedIndex].text,
+                date: document.getElementById('bookingDate').value,
+                startTime: document.getElementById('startTime').value,
+                endTime: document.getElementById('endTime').value,
+                vehicle: document.getElementById('vehicleNumber').value,
+                amount: Math.floor(Math.random() * 200000) + 50000, // Random amount for demo
+                status: 'pending'
+            };
+
+            bookings.unshift(formData);
+            renderBookings();
+            closeBookingModal();
+            alert('Đã tạo đặt chỗ mới thành công!');
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('bookingModal');
+            if (event.target === modal) {
+                closeBookingModal();
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            renderBookings();
+        });
+    </script>
+</body>
+</html>

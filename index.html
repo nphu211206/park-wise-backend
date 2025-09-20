@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ParkWise - Hệ thống quản lý bãi đỗ xe thông minh</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <i class="fas fa-car"></i>
+                    <span>ParkWise</span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="#home">Trang chủ</a></li>
+                    <li><a href="#features">Tính năng</a></li>
+                    <li><a href="#about">Về chúng tôi</a></li>
+                    <li><a href="user-dashboard.html" class="btn-user">Người dùng</a></li>
+                    <li><a href="#" onclick="showAdminLogin()" class="btn-admin">Quản trị</a></li>
+                </ul>
+                <div class="hamburger" onclick="toggleMobileMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <!-- Mobile Menu -->
+                <div class="mobile-menu" id="mobileMenu">
+                    <ul>
+                        <li><a href="#home" onclick="toggleMobileMenu()">Trang chủ</a></li>
+                        <li><a href="#features" onclick="toggleMobileMenu()">Tính năng</a></li>
+                        <li><a href="#about" onclick="toggleMobileMenu()">Về chúng tôi</a></li>
+                        <li><a href="user-dashboard.html" onclick="toggleMobileMenu()">Người dùng</a></li>
+                        <li><a href="#" onclick="showAdminLogin(); toggleMobileMenu();">Quản trị</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Quản lý bãi đỗ xe 
+                    <span class="gradient-text">thông minh</span>
+                </h1>
+                <p class="hero-description">
+                    Tìm kiếm, đặt chỗ và thanh toán bãi đỗ xe một cách dễ dàng. 
+                    Hệ thống AI tự động điều chỉnh giá theo nhu cầu thực tế.
+                </p>
+                <div class="hero-buttons">
+                    <a href="user-dashboard.html" class="btn btn-primary">
+                        <i class="fas fa-search"></i>
+                        Tìm bãi đỗ xe
+                    </a>
+                    <a href="#" onclick="showAdminLogin()" class="btn btn-secondary">
+                        <i class="fas fa-chart-line"></i>
+                        Quản lý hệ thống
+                    </a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="parking-visual">
+                    <div class="parking-lot">
+                        <div class="parking-spot available"></div>
+                        <div class="parking-spot occupied"></div>
+                        <div class="parking-spot available"></div>
+                        <div class="parking-spot reserved"></div>
+                        <div class="parking-spot available"></div>
+                        <div class="parking-spot occupied"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Tính năng nổi bật</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h3>Tìm kiếm thông minh</h3>
+                    <p>Tìm bãi đỗ xe gần nhất với bộ lọc theo giá, khoảng cách và đánh giá</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h3>Đặt chỗ trước</h3>
+                    <p>Đặt chỗ đỗ xe trước khi đến, đảm bảo có chỗ đỗ khi cần</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>AI định giá</h3>
+                    <p>Giá cả linh hoạt dựa trên nhu cầu thực tế và điều kiện thời tiết</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Thống kê chi tiết</h3>
+                    <p>Báo cáo doanh thu, tỷ lệ lấp đầy và phân tích xu hướng</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Responsive</h3>
+                    <p>Giao diện thân thiện trên mọi thiết bị từ điện thoại đến máy tính</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Bảo mật cao</h3>
+                    <p>Thông tin cá nhân và thanh toán được bảo vệ tuyệt đối</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">1,250+</div>
+                    <div class="stat-label">Bãi đỗ xe</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">50,000+</div>
+                    <div class="stat-label">Người dùng</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">98%</div>
+                    <div class="stat-label">Hài lòng</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Hỗ trợ</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>Về ParkWise</h2>
+                    <p>
+                        ParkWise là hệ thống quản lý bãi đỗ xe thông minh được phát triển với mục tiêu 
+                        giải quyết vấn nạn thiếu chỗ đỗ xe tại các thành phố lớn. Với công nghệ AI tiên tiến, 
+                        chúng tôi mang đến trải nghiệm đỗ xe thuận tiện và hiệu quả nhất.
+                    </p>
+                    <ul class="about-features">
+                        <li><i class="fas fa-check"></i> Công nghệ AI định giá thông minh</li>
+                        <li><i class="fas fa-check"></i> Giao diện trực quan, dễ sử dụng</li>
+                        <li><i class="fas fa-check"></i> Hệ thống báo cáo chi tiết</li>
+                        <li><i class="fas fa-check"></i> Hỗ trợ 24/7</li>
+                    </ul>
+                </div>
+                <div class="about-image">
+                    <div class="image-placeholder">
+                        <i class="fas fa-building"></i>
+                        <p>Hình ảnh về công ty</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-car"></i>
+                        <span>ParkWise</span>
+                    </div>
+                    <p>Hệ thống quản lý bãi đỗ xe thông minh, mang đến trải nghiệm tốt nhất cho người dùng.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Liên kết</h4>
+                    <ul>
+                        <li><a href="#home">Trang chủ</a></li>
+                        <li><a href="#features">Tính năng</a></li>
+                        <li><a href="#about">Về chúng tôi</a></li>
+                        <li><a href="user-dashboard.html">Người dùng</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Hỗ trợ</h4>
+                    <ul>
+                        <li><a href="#">Trung tâm trợ giúp</a></li>
+                        <li><a href="#">Liên hệ</a></li>
+                        <li><a href="#">Điều khoản</a></li>
+                        <li><a href="#">Chính sách</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Liên hệ</h4>
+                    <div class="contact-info">
+                        <p><i class="fas fa-envelope"></i> support@parkwise.vn</p>
+                        <p><i class="fas fa-phone"></i> 1900-1234</p>
+                        <p><i class="fas fa-map-marker-alt"></i> Hà Nội, Việt Nam</p>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 ParkWise. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal-overlay">
+        <div class="login-container">
+            <div class="form-box login">
+                <form action="#">
+                    <h1>Đăng nhập Admin</h1>
+                    <div class="input-box">
+                        <input type="text" placeholder="Tên đăng nhập" required>
+                        <i class='fas fa-user'></i>
+                    </div>
+                    <div class="input-box">
+                        <input type="password" placeholder="Mật khẩu" required>
+                        <i class='fas fa-lock'></i>
+                    </div>
+                    <div class="forgot-link">
+                        <a href="#">Quên mật khẩu?</a>
+                    </div>
+                    <button type="submit" class="btn-login">Đăng nhập</button>
+                    <p>hoặc đăng nhập với</p>
+                    <div class="social-icons">
+                        <a href="#"><i class='fab fa-google'></i></a>
+                        <a href="#"><i class='fab fa-facebook'></i></a>
+                        <a href="#"><i class='fab fa-github'></i></a>
+                        <a href="#"><i class='fab fa-linkedin'></i></a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="form-box register">
+                <form action="#">
+                    <h1>Đăng ký Admin</h1>
+                    <div class="input-box">
+                        <input type="text" placeholder="Tên đăng nhập" required>
+                        <i class='fas fa-user'></i>
+                    </div>
+                    <div class="input-box">
+                        <input type="tel" placeholder="Số điện thoại" required pattern="[0-9]{10,15}">
+                        <i class='fas fa-phone'></i>
+                    </div>
+                    <div class="input-box">
+                        <input type="password" placeholder="Mật khẩu" required>
+                        <i class='fas fa-lock'></i>
+                    </div>
+                    <button type="submit" class="btn-login">Đăng ký</button>
+                    <p>hoặc đăng ký với</p>
+                    <div class="social-icons">
+                        <a href="#"><i class='fab fa-google'></i></a>
+                        <a href="#"><i class='fab fa-facebook'></i></a>
+                        <a href="#"><i class='fab fa-github'></i></a>
+                        <a href="#"><i class='fab fa-linkedin'></i></a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="toggle-box">
+                <div class="toggle-panel toggle-left">
+                    <h1>Xin chào, Chào mừng đến với ParkWise!</h1>
+                    <p>Chưa có tài khoản quản trị?</p>
+                    <button class="btn-toggle register-btn">Đăng ký</button>
+                </div>
+
+                <div class="toggle-panel toggle-right">
+                    <h1>Chào mừng trở lại!</h1>
+                    <p>Đã có tài khoản quản trị?</p>
+                    <button class="btn-toggle login-btn">Đăng nhập</button>
+                </div>
+            </div>
+
+            <!-- Close button -->
+            <button class="close-modal" onclick="closeAdminLogin()">×</button>
+        </div>
+    </div>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            font-family: "Poppins", sans-serif;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .login-container {
+            position: relative;
+            width: 850px;
+            height: 550px;
+            background: #fff;
+            margin: 20px;
+            border-radius: 30px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, .2);
+            overflow: hidden;
+            border: 3px double #00fffc;
+            transition: all 0.5s ease;
+        }
+
+        .login-container:hover {
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .login-container h1 {
+            font-size: 36px;
+            margin: -10px 0;
+            color: #333;
+        }
+
+        .login-container p {
+            font-size: 14.5px;
+            margin: 15px 0;
+            color: #666;
+        }
+
+        .form-box {
+            position: absolute;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            color: #333;
+            text-align: center;
+            padding: 40px;
+            z-index: 1;
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .login-container.active .form-box {
+            right: 50%;
+        }
+
+        .form-box.register {
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55), visibility 0s 0.8s, opacity 0.8s ease;
+        }
+
+        .login-container.active .form-box.register {
+            visibility: visible;
+            opacity: 1;
+            transition-delay: 0s;
+        }
+
+        .input-box {
+            position: relative;
+            margin: 30px 0;
+        }
+
+        .input-box input {
+            width: 100%;
+            padding: 13px 50px 13px 20px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            outline: none;
+            font-size: 16px;
+            color: #333;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .input-box input:focus {
+            border-color: #00fffc;
+            box-shadow: 0 0 10px rgba(0, 255, 252, 0.2);
+        }
+
+        .input-box input::placeholder {
+            color: #888;
+            font-weight: 400;
+        }
+
+        .input-box i {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .input-box input:focus + i {
+            color: #00fffc;
+        }
+
+        .forgot-link {
+            margin: -15px 0 15px;
+        }
+
+        .forgot-link a {
+            font-size: 14.5px;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .forgot-link a:hover {
+            color: #00fffc;
+            text-decoration: underline;
+        }
+
+        .btn-login {
+            width: 100%;
+            height: 48px;
+            background: linear-gradient(90deg, #00fffc, #008cff);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 255, 252, 0.3);
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #fff;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 255, 252, 0.4);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn-login:hover::before {
+            left: 100%;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .social-icons a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: #f5f5f5;
+            border-radius: 50%;
+            font-size: 18px;
+            color: #666;
+            margin: 0 8px;
+            transition: all 0.3s ease;
+            border: 2px solid #e0e0e0;
+        }
+
+        .social-icons a:hover {
+            background: #00fffc;
+            color: #fff;
+            transform: translateY(-5px);
+            border-color: #00fffc;
+            box-shadow: 0 5px 15px rgba(0, 255, 252, 0.3);
+        }
+
+        .toggle-box {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .toggle-box::before {
+            content: '';
+            position: absolute;
+            left: -250%;
+            width: 300%;
+            height: 100%;
+            background: linear-gradient(90deg, #00fffc, #008cff);
+            border-radius: 150px;
+            z-index: 2;
+            transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .login-container.active .toggle-box::before {
+            left: 50%;
+        }
+
+        .toggle-panel {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 3;
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            padding: 0 40px;
+            text-align: center;
+        }
+
+        .toggle-panel h1 {
+            color: #fff;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .toggle-panel p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 25px;
+        }
+
+        .toggle-panel.toggle-left {
+            left: 0;
+            transition-delay: 0.4s;
+        }
+
+        .login-container.active .toggle-panel.toggle-left {
+            left: -50%;
+            transition-delay: 0s;
+        }
+
+        .toggle-panel.toggle-right {
+            right: -50%;
+            transition-delay: 0s;
+        }
+
+        .login-container.active .toggle-panel.toggle-right {
+            right: 0;
+            transition-delay: 0.4s;
+        }
+
+        .btn-toggle {
+            width: 160px;
+            height: 46px;
+            background: transparent;
+            border: 2px solid #fff;
+            box-shadow: none;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        /* Success Toast Notification */
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 10000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+            min-width: 300px;
+        }
+
+        .toast-notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast-notification.error {
+            background: #f44336;
+        }
+
+        .toast-notification i {
+            margin-right: 10px;
+        }
+
+        /* User Profile Styles */
+        .user-profile {
+            position: relative;
+            margin-left: 20px;
+        }
+
+        .user-avatar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #00fffc;
+            transform: translateY(-2px);
+        }
+
+        .user-avatar img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid #00fffc;
+        }
+
+        .user-avatar span {
+            color: white;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .user-avatar i {
+            color: white;
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .user-profile.open .user-avatar i {
+            transform: rotate(180deg);
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 10px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            min-width: 220px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            border: 1px solid #e0e0e0;
+        }
+
+        .user-profile.open .user-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin: 4px 8px;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+            color: #00fffc;
+            transform: translateX(5px);
+        }
+
+        .dropdown-item i {
+            width: 16px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .dropdown-item:hover i {
+            color: #00fffc;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 8px 0;
+        }
+
+        @media screen and (max-width: 650px) {
+            .login-container {
+                height: calc(100vh - 40px);
+                width: calc(100% - 40px);
+            }
+
+            .form-box {
+                bottom: 0;
+                width: 100%;
+                height: 70%;
+            }
+
+            .login-container.active .form-box {
+                right: 0;
+                bottom: 30%;
+            }
+
+            .toggle-box::before {
+                left: 0;
+                top: -270%;
+                width: 100%;
+                height: 300%;
+                border-radius: 20vw;
+            }
+
+            .login-container.active .toggle-box::before {
+                left: 0;
+                top: 70%;
+            }
+
+            .login-container.active .toggle-panel.toggle-left {
+                left: 0;
+                top: -30%;
+            }
+
+            .toggle-panel {
+                width: 100%;
+                height: 30%;
+            }
+
+            .toggle-panel.toggle-left {
+                top: 0;
+            }
+
+            .toggle-panel.toggle-right {
+                right: 0;
+                bottom: -30%;
+            }
+
+            .login-container.active .toggle-panel.toggle-right {
+                bottom: 0;
+            }
+        }
+
+        @media screen and (max-width: 400px) {
+            .form-box {
+                padding: 20px;
+            }
+
+            .toggle-panel h1 {
+                font-size: 30px;
+            }
+            
+            .login-container h1 {
+                font-size: 30px;
+            }
+        }
+    </style>
+
+    <script>
+        function showAdminLogin() {
+            document.getElementById('login-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAdminLogin() {
+            document.getElementById('login-modal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Initialize modal functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.login-container');
+            const registerBtn = document.querySelector('.register-btn');
+            const loginBtn = document.querySelector('.login-btn');
+            const modal = document.getElementById('login-modal');
+
+            registerBtn.addEventListener('click', () => {
+                container.classList.add('active');
+            });
+
+            loginBtn.addEventListener('click', () => {
+                container.classList.remove('active');
+            });
+
+            // Close modal when clicking outside
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeAdminLogin();
+                }
+            });
+
+            // Handle form submissions
+            const loginForm = document.querySelector('.form-box.login form');
+            const registerForm = document.querySelector('.form-box.register form');
+
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const username = loginForm.querySelector('input[type="text"]').value;
+                
+                // Show success toast
+                showToast('Đăng nhập thành công!', 'success');
+                
+                // Store username and redirect to admin dashboard
+                setTimeout(() => {
+                    localStorage.setItem('adminUsername', username);
+                    window.location.href = 'admin-dashboard.html';
+                }, 1000);
+            });
+
+            registerForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const username = registerForm.querySelector('input[type="text"]').value;
+                
+                // Show success toast
+                showToast('Đăng ký thành công!', 'success');
+                
+                // Store username and redirect to admin dashboard
+                setTimeout(() => {
+                    localStorage.setItem('adminUsername', username);
+                    window.location.href = 'admin-dashboard.html';
+                }, 1000);
+            });
+        });
+
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast-notification ${type}`;
+            
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            toast.innerHTML = `
+                <i class="fas ${icon}"></i>
+                ${message}
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Trigger animation
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            // Remove toast after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+
+        // Show user profile function
+        function showUserProfile(username) {
+            // This function is no longer needed as we redirect to admin dashboard
+        }
+
+        // Toggle user dropdown
+        function toggleUserDropdown() {
+            // This function is no longer needed as we redirect to admin dashboard
+        }
+
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            const hamburger = document.querySelector('.hamburger');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const body = document.body;
+            
+            hamburger.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            
+            // Prevent body scroll when menu is open
+            if (mobileMenu.classList.contains('active')) {
+                body.style.overflow = 'hidden';
+            } else {
+                body.style.overflow = 'auto';
+            }
+        }
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const hamburger = document.querySelector('.hamburger');
+            
+            if (mobileMenu && mobileMenu.classList.contains('active')) {
+                if (!mobileMenu.contains(e.target) && !hamburger.contains(e.target)) {
+                    toggleMobileMenu();
+                }
+            }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            // This function is no longer needed as we redirect to admin dashboard
+        });
+
+        // Logout function
+        function logout() {
+            // This function is no longer needed as we redirect to admin dashboard
+        }
+    </script>
+</body>
+</html>
