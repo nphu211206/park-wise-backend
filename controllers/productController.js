@@ -1,103 +1,80 @@
-// ===================================================================================
-//
-// 			PRODUCT CONTROLLER
-// 			Chứa logic xử lý cho các thao tác CRUD liên quan đến Sản phẩm gợi ý.
-//
-// ===================================================================================
+// File: controllers/productController.js (Nội dung mới)
 
-const Product = require('../models/Product');
+const axios = require('axios');
+const cheerio = require('cheerio');
+const Product = require('../models/productModel');
 
-/**
- * @desc    Lấy danh sách tất cả sản phẩm (hoặc một số lượng ngẫu nhiên).
- * @route   GET /api/products
- * @access  Private (Người dùng đã đăng nhập có thể xem)
- */
-const getProducts = async (req, res) => {
+// --- HÀM CÀO DỮ LIỆU TỪ FPT SHOP ---
+const scrapeFPTShop = async () => {
     try {
-        // Logic thông minh: Lấy ngẫu nhiên 3 sản phẩm để hiển thị cho người dùng.
-        // Đây là cách làm gợi ý sản phẩm một cách đa dạng.
-        const products = await Product.aggregate([{ $sample: { size: 3 } }]);
-        res.json(products);
-    } catch (error) {
-        console.error("Lỗi khi lấy sản phẩm:", error);
-        res.status(500).json({ message: 'Lỗi server' });
-    }
-};
+        const url = 'https://fptshop.com.vn/phu-kien';
+        const { data } = await axios.get(url);
+        const $ = cheerio.load(data);
+        let products = [];
 
-/**
- * @desc    Admin tạo một sản phẩm mới.
- * @route   POST /api/products
- * @access  Private/Admin
- */
-const createProduct = async (req, res) => {
-    const { name, imageUrl, description, price, affiliateUrl, category } = req.body;
-    try {
-        const product = new Product({
-            name,
-            imageUrl,
-            description,
-            price,
-            affiliateUrl,
-            category,
-            user: req.user._id // Gán người tạo là admin đang đăng nhập
+        $('.cdt-product-wrapper').each((i, el) => {
+            const name = $(el).find('h3.cdt-product__name').text().trim();
+            const priceText = $(el).find('.cdt-product__show-price').text().trim().replace(/[.₫]/g, '');
+            const price = parseInt(priceText, 10);
+            const imageUrl = $(el).find('.cdt-product__img img').attr('src');
+            const affiliateLink = 'https://fptshop.com.vn' + $(el).find('a').attr('href');
+
+            if (name && price && imageUrl && affiliateLink) {
+                products.push({ name, price, imageUrl, affiliateLink, source: 'FPTShop' });
+            }
         });
-        const createdProduct = await product.save();
-        res.status(201).json(createdProduct);
+        return products;
     } catch (error) {
-        console.error("Lỗi khi tạo sản phẩm:", error);
-        res.status(400).json({ message: 'Dữ liệu không hợp lệ', error: error.message });
+        console.error('Lỗi khi cào dữ liệu từ FPTShop:', error);
+        return [];
     }
 };
 
-/**
- * @desc    Admin cập nhật một sản phẩm.
- * @route   PUT /api/products/:id
- * @access  Private/Admin
- */
-const updateProduct = async (req, res) => {
-    const { name, imageUrl, description, price, affiliateUrl, category } = req.body;
+// --- CONTROLLERS ---
+
+// Controller để kích hoạt việc cào dữ liệu và lưu vào DB
+exports.scrapeAndSaveProducts = async (req, res) => {
     try {
-        const product = await Product.findById(req.params.id);
-        if (product) {
-            product.name = name || product.name;
-            product.imageUrl = imageUrl || product.imageUrl;
-            product.description = description || product.description;
-            product.price = price || product.price;
-            product.affiliateUrl = affiliateUrl || product.affiliateUrl;
-            product.category = category || product.category;
-            const updatedProduct = await product.save();
-            res.json(updatedProduct);
-        } else {
-            res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
+        console.log('Bắt đầu quá trình cào dữ liệu...');
+        const fptProducts = await scrapeFPTShop();
+        
+        if (fptProducts.length === 0) {
+            return res.status(500).json({ status: 'fail', message: 'Không cào được sản phẩm nào.' });
         }
+        
+        console.log(`Cào thành công ${fptProducts.length} sản phẩm. Đang lưu vào database...`);
+        
+        const operations = fptProducts.map(product => ({
+            updateOne: {
+                filter: { affiliateLink: product.affiliateLink },
+                update: { $set: product },
+                upsert: true,
+            },
+        }));
+
+        await Product.bulkWrite(operations);
+
+        console.log('Lưu vào database thành công!');
+        res.status(200).json({
+            status: 'success',
+            message: `Cập nhật thành công ${fptProducts.length} sản phẩm.`,
+        });
+
     } catch (error) {
-        console.error("Lỗi khi cập nhật sản phẩm:", error);
-        res.status(400).json({ message: 'Dữ liệu không hợp lệ', error: error.message });
+        res.status(500).json({ status: 'error', message: 'Lỗi server nội bộ.', error: error.message });
     }
 };
 
-/**
- * @desc    Admin xóa một sản phẩm.
- * @route   DELETE /api/products/:id
- * @access  Private/Admin
- */
-const deleteProduct = async (req, res) => {
+// Controller để lấy sản phẩm từ DB cho frontend
+exports.getAllProducts = async (req, res) => {
     try {
-        const product = await Product.findByIdAndDelete(req.params.id);
-        if (product) {
-            res.json({ message: 'Sản phẩm đã được xóa' });
-        } else {
-            res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
-        }
+        const products = await Product.aggregate([{ $sample: { size: 12 } }]);
+        res.status(200).json({
+            status: 'success',
+            results: products.length,
+            data: { products },
+        });
     } catch (error) {
-        console.error("Lỗi khi xóa sản phẩm:", error);
-        res.status(500).json({ message: 'Lỗi server' });
+        res.status(404).json({ status: 'fail', message: 'Không tìm thấy sản phẩm.' });
     }
-};
-
-module.exports = {
-    getProducts,
-    createProduct,
-    updateProduct,
-    deleteProduct
 };

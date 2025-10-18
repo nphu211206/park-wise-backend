@@ -1,10 +1,4 @@
-// ===================================================================================
-//
-// 			BOOKING CONTROLLER (ULTIMATE FINAL & DETAILED - FAKE PAYMENT)
-// 			Phiên bản đầy đủ, chi tiết, chính xác và đẳng cấp nhất,
-// 			tích hợp luồng thanh toán giả lập vào chức năng tạo booking.
-//
-// ===================================================================================
+
 
 const Booking = require('../models/Booking');
 const ParkingLot = require('../models/ParkingLot');

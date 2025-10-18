@@ -14,6 +14,7 @@ const path = require('path');
 const connectDB = require('./config/db.js');
 
 // Các "Bản đồ" API (Routes)
+
 const authRoutes = require('./routes/authRoutes.js');
 const userRoutes = require('./routes/userRoutes.js');
 const parkingLotRoutes = require('./routes/parkingLotRoutes.js');
@@ -54,7 +55,7 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/products', productRoutes);
-
+app.use('/api/products', productRoutes);
 // --- PHẦN 7: PHỤC VỤ GIAO DIỆN FRONT-END (STATIC FILES) ---
 // Dòng code này biến server back-end thành một web server hoàn chỉnh,
 // có khả năng phục vụ các file HTML, CSS, JS tĩnh.
