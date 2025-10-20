@@ -1,157 +1,139 @@
 const Booking = require('../models/Booking');
 const ParkingLot = require('../models/ParkingLot');
-const asyncHandler = require('express-async-handler'); // Cần cài: npm i express-async-handler
-const AppError = require('../utils/AppError'); // Cần tạo file này
-const { calculatePrice } = require('../utils/priceCalculator'); // File AI pricing
+const { calculateDynamicPrice } = require('../utils/priceCalculator');
 
-// @desc    Tạo một lượt đặt chỗ mới
-// @route   POST /api/bookings
-// @access  Private
-exports.createBooking = asyncHandler(async (req, res, next) => {
-  const { parkingLotId, startTime, endTime, licensePlate } = req.body;
-  const userId = req.user.id;
+/**
+ * @desc    Tạo một lượt đặt chỗ mới.
+ * @route   POST /api/bookings
+ * @access  Private
+ */
+const createBooking = async (req, res) => {
+    const { parkingLotId, startTime, endTime, vehicleNumber } = req.body;
+    if (!parkingLotId || !startTime || !endTime) {
+        return res.status(400).json({ message: 'Vui lòng điền đủ thông tin' });
+    }
+    try {
+        const parkingLot = await ParkingLot.findById(parkingLotId);
+        if (!parkingLot) return res.status(404).json({ message: 'Không tìm thấy bãi xe.' });
+        if (parkingLot.availableSpots <= 0) return res.status(400).json({ message: 'Bãi xe đã hết chỗ trống.' });
 
-  if (!parkingLotId || !startTime || !endTime || !licensePlate) {
-    return next(new AppError('Vui lòng cung cấp đầy đủ thông tin đặt chỗ', 400));
-  }
+        const dynamicPrice = calculateDynamicPrice(parkingLot);
+        const start = new Date(startTime), end = new Date(endTime);
+        if(end <= start) return res.status(400).json({ message: 'Thời gian kết thúc phải sau thời gian bắt đầu.' });
+        
+        const hours = Math.ceil(Math.abs(end - start) / 36e5);
+        const totalPrice = hours * dynamicPrice;
 
-  const parkingLot = await ParkingLot.findById(parkingLotId);
-  if (!parkingLot) {
-    return next(new AppError('Không tìm thấy bãi đỗ xe', 404));
-  }
+        const booking = new Booking({
+            user: req.user._id, parkingLot: parkingLotId, startTime, endTime, totalPrice, vehicleNumber
+        });
+        const createdBooking = await booking.save();
 
-  const newStartTime = new Date(startTime);
-  const newEndTime = new Date(endTime);
+        parkingLot.availableSpots -= 1;
+        const updatedParkingLot = await parkingLot.save();
 
-  if (newEndTime <= newStartTime) {
-    return next(new AppError('Giờ kết thúc phải sau giờ bắt đầu', 400));
-  }
+        const io = req.app.get('socketio');
+        if (io) io.emit('parkingLotUpdate', updatedParkingLot);
+        
+        res.status(201).json(createdBooking);
+    } catch (error) {
+        console.error('Lỗi khi tạo booking:', error);
+        res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+};
 
-  // --- Logic Kiểm tra Xung đột Đặt chỗ (Cực kỳ quan trọng) ---
-  // 1. Tìm các chỗ đã bị đặt trong bãi xe này
-  const conflictingBookings = await Booking.find({
-    parkingLot: parkingLotId,
-    status: { $in: ['confirmed', 'active'] }, // Chỉ kiểm tra các booking còn hiệu lực
-    $or: [
-      // Case 1: Booking mới bắt đầu trong một booking cũ
-      { startTime: { $lte: newStartTime }, endTime: { $gt: newStartTime } },
-      // Case 2: Booking mới kết thúc trong một booking cũ
-      { startTime: { $lt: newEndTime }, endTime: { $gte: newEndTime } },
-      // Case 3: Booking mới bao trọn một booking cũ
-      { startTime: { $gte: newStartTime }, endTime: { $lte: newEndTime } }
-    ]
-  });
+/**
+ * @desc    Lấy lịch sử đặt chỗ của người dùng đang đăng nhập.
+ * @route   GET /api/bookings/mybookings
+ * @access  Private
+ */
+const getMyBookings = async (req, res) => {
+    try {
+        const bookings = await Booking.find({ user: req.user._id })
+            .populate('parkingLot', 'name address')
+            .sort({ createdAt: -1 });
+        res.json(bookings);
+    } catch (error) {
+        console.error('Lỗi khi lấy booking của tôi:', error);
+        res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+};
 
-  if (conflictingBookings.length >= parkingLot.capacity) {
-    return next(new AppError('Bãi đỗ đã hết chỗ trong khung giờ bạn chọn. Vui lòng thử giờ khác.', 409));
-  }
-  
-  // --- Logic Tính giá "AI" ---
-  // Hàm này sẽ nằm trong 'utils/priceCalculator.js'
-  const { totalCost, error } = calculatePrice(parkingLot, newStartTime, newEndTime);
-  
-  if (error) {
-    return next(new AppError(error, 400));
-  }
+/**
+ * @desc    Lấy tất cả các lượt đặt chỗ trong hệ thống.
+ * @route   GET /api/bookings
+ * @access  Private/Admin
+ */
+const getAllBookings = async (req, res) => {
+    try {
+        const bookings = await Booking.find({})
+            .populate('user', 'name')
+            .populate('parkingLot', 'name')
+            .sort({ createdAt: -1 });
+        res.json(bookings);
+    } catch (error) {
+        console.error('Lỗi khi lấy tất cả booking:', error);
+        res.status(500).json({ message: 'Lỗi server' });
+    }
+};
 
-  // --- (Tùy chọn) Tìm một chỗ trống cụ thể ---
-  // Đây là logic phức tạp, có thể làm sau. Tạm thời chỉ trừ tổng.
-  // const spotNumber = findAvailableSpot(parkingLot, conflictingBookings);
+/**
+ * @desc    Người dùng tự hủy một lượt đặt chỗ của mình.
+ * @route   DELETE /api/bookings/:id/cancel
+ * @access  Private
+ */
+const cancelMyBooking = async (req, res) => {
+    try {
+        const booking = await Booking.findById(req.params.id);
+        if (!booking) return res.status(404).json({ message: 'Không tìm thấy lượt đặt chỗ' });
+        if (booking.user.toString() !== req.user._id.toString()) return res.status(401).json({ message: 'Không được phép thực hiện thao tác này' });
+        if (['completed', 'active', 'cancelled'].includes(booking.status)) return res.status(400).json({ message: 'Không thể hủy lượt đặt chỗ đã/đang diễn ra hoặc đã hủy' });
 
-  const booking = await Booking.create({
-    user: userId,
-    parkingLot: parkingLotId,
-    licensePlate,
-    startTime: newStartTime,
-    endTime: newEndTime,
-    totalCost: totalCost,
-    status: 'confirmed', // Giả sử đã thanh toán hoặc thanh toán sau
-    paymentStatus: 'unpaid'
-    // spotNumber: spotNumber
-  });
-  
-  // (Nên dùng real-time) Cập nhật số chỗ trống (tạm thời)
-  // Logic này nên được làm kỹ hơn bằng cách dùng spots array
-  parkingLot.availableSpots -= 1;
-  await parkingLot.save();
+        booking.status = 'cancelled';
+        await booking.save();
+        
+        const parkingLot = await ParkingLot.findById(booking.parkingLot);
+        if (parkingLot) {
+            parkingLot.availableSpots += 1;
+            const updatedParkingLot = await parkingLot.save();
+            const io = req.app.get('socketio');
+            if (io) io.emit('parkingLotUpdate', updatedParkingLot);
+        }
+        
+        res.json({ message: 'Đã hủy đặt chỗ thành công' });
+    } catch (error) { res.status(500).json({ message: 'Lỗi server' }); }
+};
 
-  res.status(201).json({
-    success: true,
-    data: booking
-  });
-});
+/**
+ * @desc    Admin cập nhật trạng thái của một lượt đặt chỗ.
+ * @route   PUT /api/bookings/:id/status
+ * @access  Private/Admin
+ */
+const updateBookingStatusByAdmin = async (req, res) => {
+    try {
+        const booking = await Booking.findById(req.params.id);
+        if (!booking) return res.status(404).json({ message: 'Không tìm thấy lượt đặt chỗ' });
 
-// @desc    Lấy tất cả booking của người dùng
-// @route   GET /api/bookings/mybookings
-// @access  Private
-exports.getMyBookings = asyncHandler(async (req, res, next) => {
-  const bookings = await Booking.find({ user: req.user.id })
-    .populate({
-      path: 'parkingLot',
-      select: 'name address images' // Chỉ lấy thông tin cần thiết
-    })
-    .sort({ startTime: -1 }); // Sắp xếp mới nhất lên trước
+        const oldStatus = booking.status;
+        const newStatus = req.body.status;
+        if (!['pending', 'confirmed', 'active', 'completed', 'cancelled'].includes(newStatus)) {
+            return res.status(400).json({ message: 'Trạng thái không hợp lệ' });
+        }
+        booking.status = newStatus;
+        await booking.save();
 
-  res.status(200).json({
-    success: true,
-    count: bookings.length,
-    data: bookings
-  });
-});
+        if ((oldStatus === 'active' || oldStatus === 'confirmed') && (newStatus === 'cancelled' || newStatus === 'completed')) {
+            const parkingLot = await ParkingLot.findById(booking.parkingLot);
+            if (parkingLot) {
+                parkingLot.availableSpots += 1;
+                const updatedParkingLot = await parkingLot.save();
+                const io = req.app.get('socketio');
+                if (io) io.emit('parkingLotUpdate', updatedParkingLot);
+            }
+        }
+        
+        res.json(booking);
+    } catch (error) { res.status(500).json({ message: 'Lỗi server' }); }
+};
 
-// @desc    Hủy đặt chỗ
-// @route   PUT /api/bookings/:id/cancel
-// @access  Private
-exports.cancelBooking = asyncHandler(async (req, res, next) => {
-  const booking = await Booking.findById(req.params.id);
-
-  if (!booking) {
-    return next(new AppError('Không tìm thấy lượt đặt chỗ', 404));
-  }
-
-  // Đảm bảo đúng người dùng mới được hủy
-  if (booking.user.toString() !== req.user.id && req.user.role !== 'admin') {
-    return next(new AppError('Bạn không có quyền thực hiện hành động này', 401));
-  }
-
-  // Chỉ cho phép hủy nếu booking đang 'pending' hoặc 'confirmed'
-  if (booking.status !== 'pending' && booking.status !== 'confirmed') {
-    return next(new AppError(`Không thể hủy lượt đặt đang ở trạng thái ${booking.status}`, 400));
-  }
-  
-  // (Logic Hoàn tiền - sẽ làm khi tích hợp thanh toán)
-  // await refundPayment(booking.paymentId);
-
-  booking.status = 'cancelled';
-  await booking.save();
-  
-  // Cập nhật lại số chỗ
-  const parkingLot = await ParkingLot.findById(booking.parkingLot);
-  parkingLot.availableSpots += 1;
-  await parkingLot.save();
-  
-  res.status(200).json({
-    success: true,
-    data: booking
-  });
-});
-
-// --- DÀNH CHO ADMIN ---
-
-// @desc    Lấy tất cả booking (cho Admin)
-// @route   GET /api/bookings
-// @access  Private (Admin)
-exports.getAllBookings = asyncHandler(async (req, res, next) => {
-  // Triển khai APIFeatures để admin có thể lọc, tìm kiếm, phân trang
-  // const features = new APIFeatures(Booking.find(), req.query)...
-  
-  const bookings = await Booking.find()
-    .populate('user', 'name email')
-    .populate('parkingLot', 'name');
-
-  res.status(200).json({
-    success: true,
-    count: bookings.length,
-    data: bookings
-  });
-});
+module.exports = { createBooking, getMyBookings, getAllBookings, cancelMyBooking, updateBookingStatusByAdmin };

@@ -1,20 +1,30 @@
-// controllers/userController.js (Bản Hoàn thiện chức năng Quản trị)
 const User = require('../models/User');
 
 /**
  * @desc    Lấy thông tin hồ sơ của người dùng đang đăng nhập.
  * @route   GET /api/users/profile
- * @access  Private
+ * @access  Private (Yêu cầu đăng nhập)
  */
 const getUserProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user._id).select('-password');
+        // `req.user` đã được middleware `protect` tìm và gắn vào từ trước.
+        // Đây là cách lấy thông tin người dùng một cách an toàn và đáng tin cậy.
+        const user = req.user;
         if (user) {
-            res.json(user);
+            res.json({
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                role: user.role,
+            });
         } else {
             res.status(404).json({ message: 'Không tìm thấy người dùng' });
         }
-    } catch (error) { res.status(500).json({ message: 'Lỗi server' }); }
+    } catch (error) {
+        console.error("Lỗi khi lấy profile:", error);
+        res.status(500).json({ message: 'Lỗi server' });
+    }
 };
 
 /**
@@ -25,13 +35,22 @@ const getUserProfile = async (req, res) => {
 const updateUserProfile = async (req, res) => {
     try {
         const user = await User.findById(req.user._id);
+
         if (user) {
+            // Cập nhật các trường nếu chúng được cung cấp trong request body.
+            // Nếu không, giữ lại giá trị cũ.
             user.name = req.body.name || user.name;
             user.phone = req.body.phone || user.phone;
+            
+            // Nếu người dùng cung cấp mật khẩu mới, nó sẽ được cập nhật.
+            // Middleware .pre('save') trong User model sẽ tự động mã hóa mật khẩu này.
             if (req.body.password) {
-                user.password = req.body.password; // Mongoose's pre-save hook sẽ tự động hash
+                user.password = req.body.password;
             }
+
             const updatedUser = await user.save();
+            
+            // Trả về thông tin đã cập nhật.
             res.json({
                 _id: updatedUser._id,
                 name: updatedUser.name,
@@ -42,69 +61,27 @@ const updateUserProfile = async (req, res) => {
         } else {
             res.status(404).json({ message: 'Không tìm thấy người dùng' });
         }
-    } catch (error) { res.status(500).json({ message: 'Lỗi server' }); }
+    } catch (error) {
+        console.error("Lỗi khi cập nhật profile:", error);
+        res.status(500).json({ message: 'Lỗi server' });
+    }
 };
-
-// --- CÁC CHỨC NĂNG MỚI DÀNH CHO ADMIN ---
 
 /**
  * @desc    Lấy danh sách tất cả người dùng.
  * @route   GET /api/users
- * @access  Private/Admin
+ * @access  Private/Admin (Chỉ Admin mới có quyền truy cập)
  */
 const getUsers = async (req, res) => {
     try {
+        // Tìm tất cả các document trong collection 'users' và loại bỏ trường password
         const users = await User.find({}).select('-password');
         res.json(users);
-    } catch (error) { res.status(500).json({ message: 'Lỗi server' }); }
-};
-
-/**
- * @desc    Admin xóa một người dùng.
- * @route   DELETE /api/users/:id
- * @access  Private/Admin
- */
-const deleteUser = async (req, res) => {
-    try {
-        const user = await User.findById(req.params.id);
-        if (user) {
-            // Thêm logic để không cho phép admin tự xóa chính mình
-            if(user.role === 'admin') {
-                return res.status(400).json({ message: 'Không thể xóa tài khoản Admin.' });
-            }
-            await user.deleteOne();
-            res.json({ message: 'Người dùng đã được xóa' });
-        } else {
-            res.status(404).json({ message: 'Không tìm thấy người dùng' });
-        }
-    } catch (error) { res.status(500).json({ message: 'Lỗi server' }); }
-};
-
-/**
- * @desc    Admin cập nhật thông tin một người dùng (ví dụ: phong làm admin).
- * @route   PUT /api/users/:id
- * @access  Private/Admin
- */
-const updateUser = async (req, res) => {
-    try {
-        const user = await User.findById(req.params.id);
-        if (user) {
-            user.name = req.body.name || user.name;
-            user.phone = req.body.phone || user.phone;
-            user.role = req.body.role || user.role;
-            const updatedUser = await user.save();
-            res.json({
-                _id: updatedUser._id,
-                name: updatedUser.name,
-                email: updatedUser.email,
-                phone: updatedUser.phone,
-                role: updatedUser.role,
-            });
-        } else {
-            res.status(404).json({ message: 'Không tìm thấy người dùng' });
-        }
-    } catch (error) { res.status(500).json({ message: 'Lỗi server' }); }
+    } catch (error) {
+        console.error("Lỗi khi lấy danh sách người dùng:", error);
+        res.status(500).json({ message: 'Lỗi server' });
+    }
 };
 
 
-module.exports = { getUserProfile, updateUserProfile, getUsers, deleteUser, updateUser };
+module.exports = { getUserProfile, updateUserProfile, getUsers };

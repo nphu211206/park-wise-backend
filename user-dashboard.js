@@ -1,3 +1,9 @@
+// ===================================================================================
+//
+// 			USER DASHBOARD SCRIPT (ULTIMATE FINAL & DETAILED VERSION)
+// 			File này điều khiển toàn bộ trang Dashboard của người dùng.
+//
+// ===================================================================================
 
 document.addEventListener('DOMContentLoaded', function() {
     // --- PHẦN 1: KHAI BÁO CÁC BIẾN TOÀN CỤC VÀ CẤU HÌNH ---
@@ -244,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchParkingLots(); // Tải lại toàn bộ danh sách để đảm bảo đồng bộ nhất
     });
 
-    
+    // --- PHẦN 7: CHẠY LẦN ĐẦU ---
     fetchParkingLots();
     fetchMyBookings();
 });

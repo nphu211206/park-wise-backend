@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thanh toán & Đặt chỗ - ParkWise</title>
+    <title>Xác nhận Đặt chỗ - ParkWise</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -25,82 +25,84 @@
     </header>
     
     <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-8">Hoàn tất Đặt chỗ</h1>
-        <form id="bookingForm" class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            
-            <div class="bg-white p-6 rounded-xl shadow-lg">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-3">1. Thông tin của bạn</h3>
-                <div class="space-y-4">
-                    <div>
-                        <label for="fullName" class="block text-sm font-medium text-gray-700">Họ và tên *</label>
-                        <input type="text" id="fullName" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500" required>
-                    </div>
-                    <div>
-                        <label for="phoneNumber" class="block text-sm font-medium text-gray-700">Số điện thoại *</label>
-                        <input type="tel" id="phoneNumber" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500" required>
-                    </div>
-                    <div>
-                        <label for="vehicleNumber" class="block text-sm font-medium text-gray-700">Biển số xe</label>
-                        <input type="text" id="vehicleNumber" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label for="startTime" class="block text-sm font-medium text-gray-700">Thời gian bắt đầu *</label>
-                            <input type="datetime-local" id="startTime" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500" required>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Hoàn tất đặt chỗ của bạn</h1>
+        <p class="text-gray-600 mb-8">Vui lòng xác nhận thông tin chi tiết và hoàn tất biểu mẫu dưới đây.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="space-y-6">
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-3">Chi tiết bãi đỗ xe</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-map-marker-alt text-lg text-gray-400 mt-1"></i>
+                            <div>
+                                <strong id="lotName" class="text-gray-900">Đang tải...</strong>
+                                <p id="lotAddress" class="text-sm text-gray-500"></p>
+                            </div>
                         </div>
-                        <div>
-                            <label for="endTime" class="block text-sm font-medium text-gray-700">Thời gian kết thúc *</label>
-                            <input type="datetime-local" id="endTime" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500" required>
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-money-bill-wave text-lg text-gray-400"></i>
+                            <div>
+                                <strong class="text-gray-900">Giá</strong>
+                                <p id="lotPrice" class="text-sm text-gray-500"></p>
+                            </div>
                         </div>
                     </div>
                 </div>
-                
-                <h3 class="text-lg font-semibold text-gray-800 mt-6 mb-4 border-b pb-3">2. Thông tin thanh toán (Giả lập)</h3>
-                <div class="space-y-4">
-                    <div>
-                        <label for="cardNumber" class="block text-sm font-medium text-gray-700">Số thẻ</label>
-                        <input type="text" id="cardNumber" placeholder="Thẻ Visa/Mastercard bắt đầu bằng số 4 hoặc 5" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500" required>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="expiryDate" class="block text-sm font-medium text-gray-700">Ngày hết hạn</label>
-                            <input type="text" id="expiryDate" placeholder="MM/YY" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3" required>
+
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-3">Tổng kết chi phí</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Phí đậu xe:</span>
+                            <span id="parkingFeeText" class="font-medium text-gray-800">Chọn thời gian để tính giá</span>
                         </div>
-                        <div>
-                            <label for="cvc" class="block text-sm font-medium text-gray-700">CVC</label>
-                            <input type="text" id="cvc" placeholder="123" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3" required>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Phí dịch vụ:</span>
+                            <span class="font-medium text-gray-800">5,000 VNĐ</span>
+                        </div>
+                        <div class="border-t my-2"></div>
+                        <div class="flex justify-between text-base">
+                            <span class="font-bold text-gray-900">Tổng cộng:</span>
+                            <span id="totalCostText" class="font-bold text-blue-600">5,000 VNĐ</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="space-y-6">
-                <div class="bg-white p-6 rounded-xl shadow-lg">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-3">Chi tiết bãi đỗ xe</h3>
-                    <div id="lotDetails" class="space-y-3">
-                        <div class="flex items-start space-x-3"><i class="fas fa-map-marker-alt text-lg text-gray-400 mt-1"></i>
-                            <div><strong id="lotName" class="text-gray-900">Đang tải...</strong><p id="lotAddress" class="text-sm text-gray-500"></p></div>
-                        </div>
-                        <div class="flex items-center space-x-3"><i class="fas fa-money-bill-wave text-lg text-gray-400"></i>
-                            <div><strong class="text-gray-900">Giá</strong><p id="lotPrice" class="text-sm text-gray-500"></p></div>
-                        </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-3">Thông tin của bạn</h3>
+                <form id="bookingForm" class="space-y-4">
+                    <div>
+                        <label for="fullName" class="block text-sm font-medium text-gray-700">Họ và tên *</label>
+                        <input type="text" id="fullName" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
                     </div>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-lg">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-3">Tổng kết chi phí</h3>
-                    <div id="costSummary" class="space-y-2 text-sm">
-                        <div class="flex justify-between"><span class="text-gray-600">Phí đậu xe:</span><span id="parkingFeeText" class="font-medium text-gray-800">Chọn thời gian để tính giá</span></div>
-                        <div class="flex justify-between"><span class="text-gray-600">Phí dịch vụ:</span><span class="font-medium text-gray-800">5,000 VNĐ</span></div>
-                        <div class="border-t my-2"></div>
-                        <div class="flex justify-between text-base"><span class="font-bold text-gray-900">Tổng cộng:</span><span id="totalCostText" class="font-bold text-blue-600">5,000 VNĐ</span></div>
+                    <div>
+                        <label for="phoneNumber" class="block text-sm font-medium text-gray-700">Số điện thoại *</label>
+                        <input type="tel" id="phoneNumber" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
                     </div>
-                </div>
-                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    Thanh toán và Hoàn tất
-                </button>
+                     <div>
+                        <label for="vehicleNumber" class="block text-sm font-medium text-gray-700">Biển số xe</label>
+                        <input type="text" id="vehicleNumber" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="startTime" class="block text-sm font-medium text-gray-700">Thời gian bắt đầu *</label>
+                        <input type="datetime-local" id="startTime" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                    </div>
+                    <div>
+                        <label for="endTime" class="block text-sm font-medium text-gray-700">Thời gian kết thúc *</label>
+                        <input type="datetime-local" id="endTime" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                    </div>
+                    <div class="pt-4">
+                        <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Xác nhận và Đặt chỗ
+                        </button>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </main>
+
     <script src="booking.js"></script>
 </body>
 </html>
