@@ -50,7 +50,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/parking-lots', parkingLotRoutes); // Route đã nâng cấp
 app.use('/api/bookings', bookingRoutes);     // Route đã nâng cấp
 app.use('/api/slots', slotRoutes);         // Route HOÀN TOÀN MỚI
-
+app.use('/api/reviews', require('./routes/reviewRoutes.js'));
 // --- PHỤC VỤ FRONT-END (React/Next.js Build) ---
 // (Phần này sẽ dùng khi bạn build dự án React/Next.js)
 /*
