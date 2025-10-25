@@ -2,6 +2,34 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs'); // Thư viện chuyên dụng để mã hóa mật khẩu
 
 // Định nghĩa cấu trúc (Schema) cho User
+const vehicleSchema = new mongoose.Schema({
+    nickname: { // Tên gợi nhớ (VD: "Xe Vợ", "Xe Đi Làm")
+        type: String,
+        trim: true,
+        maxlength: [50, 'Tên gợi nhớ không quá 50 ký tự']
+    },
+    numberPlate: { // Biển số xe
+        type: String,
+        required: [true, 'Biển số xe là bắt buộc'],
+        trim: true,
+        uppercase: true,
+        // (Đẳng cấp ✨) Thêm unique constraint trong mảng vehicles của user
+        // validate: { ... } // Có thể thêm regex validation cho biển số VN
+    },
+    type: { // Loại xe
+        type: String,
+        required: [true, 'Loại xe là bắt buộc'],
+        enum: ['motorbike', 'car_4_seats', 'car_7_seats', 'suv', 'ev_car', 'any'], // Đồng bộ với ParkingLot
+    },
+    isDefault: { // Xe mặc định?
+        type: Boolean,
+        default: false,
+    },
+    // (Bùng nổ 💥) Thêm thông tin khác nếu cần
+    // color: String,
+    // model: String,
+    // imageUrl: String,
+}, { _id: true }); // Bật _id cho sub-document để dễ dàng update/delete
 const userSchema = new mongoose.Schema(
     {
         // Tên người dùng, là bắt buộc (required)
@@ -46,6 +74,41 @@ const userSchema = new mongoose.Schema(
  * Đoạn mã này sẽ tự động chạy TRƯỚC KHI một đối tượng User được lưu vào database.
  * Nhiệm vụ của nó là kiểm tra xem mật khẩu có bị thay đổi không. Nếu có, nó sẽ mã hóa mật khẩu mới.
  */
+userSchema.pre('save', function(next) {
+    if (this.isModified('vehicles')) {
+        let defaultCount = 0;
+        let defaultIndex = -1;
+
+        this.vehicles.forEach((vehicle, index) => {
+            if (vehicle.isDefault) {
+                defaultCount++;
+                defaultIndex = index;
+            }
+            // (Đẳng cấp ✨) Đảm bảo biển số là unique cho user này
+            const duplicatePlate = this.vehicles.find((v, i) => i !== index && v.numberPlate === vehicle.numberPlate);
+            if (duplicatePlate) {
+                 return next(new Error(`Biển số "${vehicle.numberPlate}" đã được thêm.`));
+            }
+        });
+
+        if (defaultCount > 1) {
+            // Nếu có nhiều xe default, chỉ giữ lại cái cuối cùng được đánh dấu
+            this.vehicles.forEach((vehicle, index) => {
+                if (index !== defaultIndex) {
+                    vehicle.isDefault = false;
+                }
+            });
+         } else if (defaultCount === 0 && this.vehicles.length === 1) {
+             // Nếu chỉ có 1 xe và chưa có xe default, tự động đặt nó làm default
+             this.vehicles[0].isDefault = true;
+         } else if (defaultCount === 0 && defaultIndex !== -1 && this.vehicles.length > 0) {
+             // Nếu không có xe default nào được chọn nhưng trước đó có xe default (và giờ nó bị xóa/sửa)
+             // -> Đặt xe đầu tiên làm default (nếu còn xe)
+             this.vehicles[0].isDefault = true;
+         }
+    }
+    next();
+});
 userSchema.pre('save', async function(next) {
     // Nếu mật khẩu không được sửa đổi (ví dụ: người dùng chỉ cập nhật tên), bỏ qua bước mã hóa.
     if (!this.isModified('password')) {

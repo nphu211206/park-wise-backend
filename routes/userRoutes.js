@@ -1,45 +1,38 @@
-// routes/userRoutes.js (PHIÊN BẢN ĐẲNG CẤP)
-// Quản lý các API liên quan đến Người dùng (Profile, Quản lý User)
+// routes/userRoutes.js (Thêm routes cho Vehicles)
 
 const express = require('express');
 const router = express.Router();
 
-// Import controllers và middleware
 const {
-    getUserProfile,     // Lấy thông tin profile của user đang đăng nhập
-    updateUserProfile,  // Cập nhật profile của user đang đăng nhập
-    getUsers            // (Admin) Lấy danh sách tất cả user
-} = require('../controllers/userController'); // Đường dẫn đến userController
-const { protect, admin } = require('../middleware/authMiddleware'); // Middleware xác thực và phân quyền
+    getUserProfile,
+    updateUserProfile,
+    getUsers,
+    // Import các hàm CRUD vehicles mới
+    addUserVehicle,
+    getUserVehicles,
+    updateUserVehicle,
+    deleteUserVehicle
+} = require('../controllers/userController');
+const { protect, admin } = require('../middleware/authMiddleware');
 
-// --- Định nghĩa các Routes ---
+// --- Routes cho Profile cá nhân ---
+router.route('/profile')
+    .get(protect, getUserProfile)      // Lấy profile (giờ đã bao gồm vehicles)
+    .put(protect, updateUserProfile);  // Cập nhật profile cơ bản
 
-/**
- * @route   GET /api/users/profile
- * @desc    Lấy thông tin hồ sơ cá nhân
- * @access  Private (Yêu cầu đăng nhập - dùng middleware `protect`)
- */
-router.get('/profile', protect, getUserProfile);
+// --- (Bùng nổ 💥) Routes cho quản lý Xe của người dùng ---
+router.route('/profile/vehicles')
+    .post(protect, addUserVehicle)     // Thêm xe mới
+    .get(protect, getUserVehicles);    // Lấy danh sách xe
 
-/**
- * @route   PUT /api/users/profile
- * @desc    Cập nhật thông tin hồ sơ cá nhân
- * @access  Private (Yêu cầu đăng nhập - dùng middleware `protect`)
- */
-router.put('/profile', protect, updateUserProfile);
+router.route('/profile/vehicles/:vehicleId')
+    .put(protect, updateUserVehicle)   // Cập nhật xe (nickname, type, isDefault)
+    .delete(protect, deleteUserVehicle); // Xóa xe
 
-/**
- * @route   GET /api/users
- * @desc    (Admin) Lấy danh sách tất cả người dùng
- * @access  Private/Admin (Yêu cầu đăng nhập VÀ là admin - dùng cả `protect` và `admin`)
- */
-router.get('/', protect, admin, getUsers);
+// --- Routes cho Admin ---
+router.route('/')
+    .get(protect, admin, getUsers);    // Lấy danh sách tất cả user
 
-// --- (Bùng nổ) Các Routes Quản lý User Nâng cao (Admin - Sẽ thêm sau) ---
-// Ví dụ:
-// router.get('/:id', protect, admin, getUserById); // Lấy thông tin chi tiết 1 user
-// router.put('/:id', protect, admin, updateUserById); // Admin cập nhật thông tin user khác
-// router.delete('/:id', protect, admin, deleteUser); // Admin xóa user
-// router.put('/:id/block', protect, admin, blockUser); // Admin khóa tài khoản
+// Thêm các routes admin khác (xem chi tiết user, khóa user...) nếu cần
 
 module.exports = router;
